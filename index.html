@@ -60,7 +60,6 @@
 
 			button.addEventListener('click', function () {
 				var p = document.body.querySelector('#res');
-				//var td = myTable.getElementsByTagName('td');
 				var totalClicks = document.querySelector('#counter');
 								
 				if(p){
@@ -84,9 +83,6 @@
 				var tr = document.createElement('tr');
 				table.appendChild(tr);
 				for (var j = 0; j < columns; j++) {
-					/*if(count > array.length - 1){
-						return null;
-					}*/
 					var td = document.createElement('td');
 					tr.appendChild(td);
 					td.innerHTML = array[count];
