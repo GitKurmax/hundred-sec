@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	body {
+		text-align: center;
+	}
+		table,td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			margin:auto;
+			cursor: pointer;
+			-webkit-user-select: none;
+		}
+		td {
+			width: 50px;
+			height: 50px;
+			text-align: center;
+			font-size: 25px;
+		}
+
+		.active {
+			background-color: red;
+		}
+
+		h1,p {
+			text-align: center;
+		}
+
+		button {
+			margin-bottom:20px;
+		}
+
+		#counter {
+			width: 30px;
+			text-align: center;
+			margin-left: 10px;
+		}
+	</style>
+</head>
+<body>
+	<!-- Сделайте игру, в которой нужно будет кликать по числам от 1 до 25. Числа выведены в виде таблицы table в случайном порядке. Играющему необходимо по порядку кликать по числам - сначала 1, потом 2 и так далее до 25. Когда он кликает на правильную ячейку - она активируется и делает красный фон. Когда он кликает на неправильную ячейку - ничего не происходит. Когда он дойдет до последнего числа - игра начинается сначала.
+		Модифицируйте задачу так, чтобы в игре тикал таймер обратного отсчета. Если игрок не успел найти все числа по порядку - он проиграл.
+	 -->
+	<h1>Игра "100 секунд"</h1>
+	<p>Необходимо за 100 секунд выбрать все цифры по порядку. В случае выигрыша количество ячеек увеличивается.
+	</p>
+	<button id="start">Начать игру</button>
+	<p>
+		К-во очков<input type="text" id="counter" value="0" name="" disabled> 
+	</p>
+	<script type="text/javascript">
+		func();
+
+		function func(){
+			var myTable = createTable(shuffle(range(1,25)));
+			var button = document.body.querySelector('#start');
+
+			button.addEventListener('click', function () {
+				var p = document.body.querySelector('#res');
+				//var td = myTable.getElementsByTagName('td');
+				var totalClicks = document.querySelector('#counter');
+								
+				if(p){
+					document.body.removeChild(p);
+					document.body.removeChild(myTable);
+					myTable = createTable(shuffle(range(1,25)));
+					totalClicks.value = 0;
+				}
+				setActive(myTable);
+				this.disabled = true;
+			})
+		}
+
+		function createTable(array){
+			var table = document.createElement('table');
+			document.body.appendChild(table);
+			var count = 0;
+			var rows = 5;
+			var columns = 5;
+			for (var i = 0; i < rows; i++) {
+				var tr = document.createElement('tr');
+				table.appendChild(tr);
+				for (var j = 0; j < columns; j++) {
+					/*if(count > array.length - 1){
+						return null;
+					}*/
+					var td = document.createElement('td');
+					tr.appendChild(td);
+					td.innerHTML = array[count];
+					count++;
+				}
+			}
+			return table;
+		}
+
+		function range(a,b){
+			var array = [];
+			for (var i = a; i <= b; i++) {
+				array.push(i);
+			}
+			return array;
+		}
+
+		function shuffle(array){
+			var newArr = [];
+			var length = array.length;
+			for (var i = 0; i < length; i++) {
+				var k = Math.round(Math.random()*(array.length-1));
+				newArr.push(array[k]);
+				array.splice(k,1);
+			}
+			return newArr;
+		}
+
+		function setActive(elem){
+			var p = timer(elem);
+			var count = 1;
+			elem.addEventListener('click', function classAdd() {
+				if(p.innerHTML == 'Ты проиграл!'){
+					elem.removeEventListener('click',classAdd);
+					return null;
+				}else{
+					count = setClass(count);
+				}
+				counter(event.target);
+				addCells(elem,p);
+			});
+		}
+
+		function timer(elem){
+			var p = document.createElement('p');
+			p.setAttribute('id', 'res');
+			document.body.appendChild(p);
+			var count = 100; 
+			p.innerHTML = count;
+			var id = setInterval(function () {
+				p.innerHTML = count - 1;
+				if(count == 1){
+					var button = document.body.querySelector('#start');
+					button.disabled = false;
+					clearInterval(id);
+					p.innerHTML = 'Ты проиграл!';
+				}
+					return count--;
+				},1000);
+			return p;
+			}
+
+			function setClass(count) {
+				if(event.target.innerHTML == count){
+					event.target.classList.add('active');
+					count++;
+					return count;
+				}else{
+					return count;
+				}
+			}
+
+			function addCells(elem){
+				var full = elem.querySelectorAll('.active');
+				var tr = elem.getElementsByTagName('tr');
+				var td = elem.getElementsByTagName('td');
+
+				if(full.length == td.length){
+					var textElem = document.body.querySelector('#res');
+					document.body.removeChild(textElem);
+					for (var i = 0; i < tr.length; i++) {
+						var cell = document.createElement('td');
+						tr[i].appendChild(cell);
+					}
+
+					var row = document.createElement('tr');
+					elem.appendChild(row);
+
+					for (var i = 0; i < tr.length; i++) {
+						var newTd = document.createElement('td');
+						row.appendChild(newTd);
+					}
+
+					var arr = shuffle(range(1,tr.length*tr.length));
+					
+					for (var i = 0; i < arr.length; i++) {
+						td[i].innerHTML = arr[i];
+						td[i].classList.remove('active');
+						td[i].classList.remove('done');
+					}
+					setActive(elem);
+				}
+			}
+
+			function counter(elem){
+				if(elem.classList.contains('active')&& !elem.classList.contains('done')){
+					var totalCount = document.querySelector('#counter');
+					totalCount.value = +totalCount.value + 1;
+					elem.classList.add('done');
+			}
+		}
+	</script>
+</body>
+</html>
